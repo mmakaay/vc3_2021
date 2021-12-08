@@ -1,0 +1,114 @@
+Running the code
+----------------
+
+The code can be run by feeding it to a python3 interpreter.
+For example on the Linux command line:
+
+  $ python3 tree_01.py
+
+
+How the code works
+------------------
+
+To explain how the code works, it's probably best to transform it into
+a more readable state ;-) Let's see... to start, we got this thing:
+
+  for i in")+-/+/37-39?++":print(f"{'*'*(ord(i)-40):^80s}")
+
+
+Let's format the code and extract some variables:
+
+  sequence = ")+-/+/37-39?++"
+  for input in sequence:
+    width = ord(input) - 40
+    layer = '*' * width
+    print(f"{layer:^80s}")
+
+
+What we've got at this point is a loop over some form of input (more about that
+later). Within this loop, a computation produces the width of the tree at the
+current tree layer. Eventually the code prints a layer of the file. In pseudocode:
+
+  foreach input value
+    compute the width of the layer using the input value
+    format the layer
+    print the layer
+
+
+The layer formatting creates the layer based on the computed width:
+
+  '*' * width
+
+means "create a string containing 'width' asterisks". So if width=10, then the
+resulting string for the layer would become
+
+  "**********"
+
+This tree layer is wrapped in a formatting construct:
+
+  {layer:^80s}
+
+This specification means:
+  - s  = format the variable 'layer' as a string
+  - 80 = make that string 80 characters wide
+  - ^  = place the contents of variable 'layer' in the center of the string
+
+So this is how the layers of the tree are printed centered on the screen.
+(assuming an 80 character wide screen)
+Note: Python's print() function automatically prints a newline, so there's
+no need to print one ourselves here.
+
+
+Now let's focus on the input and the computation of the layer width.
+
+At the start, there is the magic string ")+-/+/37-39?++". This string contains
+a sequence of characters that hold the information for drawing the tree.
+
+In python, one can loop over a string, which results in getting the characters
+of the string one by one. So the loop in the program will set input to ")",
+then "+", then "-", etc.
+
+Each input character in the loop represents a single input number. As you
+might know, there's this thing called ASCII. This is a table that assigns a
+value (0 - 127) to a set of characters. For example the character "a" has
+number 96 and the character "8" has number 56. The Python function ord() can
+be used to perform this translation. For example (using the Python REPL):
+
+  >>> ord("a"), ord("8")
+  (97, 56)
+  >>>
+
+Given the input characters from the sequence, the program uses the ord()
+function to compute the layer widhts of the tree, using the function:
+
+  width = ord(input) - 40
+
+The ord() return value is not used as-is, but 40 is subtracted from it.
+The reason for this, is that otherwise for example value 7 would have to be
+represented by ASCII character number 7, which is "bell". This is a so called
+non-printable character that can't easily be used in the string sequence..
+
+
+Computation table
+-----------------
+
+character | ord | width (ord-40) | tree layer
+----------+-----+----------------+------------------------
+        ) |  41 |              1 |            *
+        + |  43 |              3 |           ***
+        - |  45 |              5 |          *****
+        / |  47 |              7 |         *******
+        + |  43 |              3 |           ***
+        / |  47 |              7 |         *******
+        3 |  51 |             11 |       ***********
+        7 |  55 |             15 |     ***************
+        - |  45 |              5 |          *****
+        3 |  51 |             11 |       ***********
+        9 |  57 |             17 |    *****************
+        ? |  63 |             23 | ***********************
+        + |  43 |              3 |           ***
+        + |  43 |              3 |           ***
+
+
+Merry Christmas!
+

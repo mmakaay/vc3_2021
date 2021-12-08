@@ -1,0 +1,130 @@
+Running the code
+----------------
+
+The code can be run by feeding it to a python3 interpreter.
+For example on the Linux command line:
+
+  $ python3 tree_03.py
+
+
+How the code works
+------------------
+
+To explain how the code works, it's probably best to transform it into
+a more readable state ;-) Let's see... to start, we got this thing:
+
+  x=4987738897068560
+  while x:print(f"{'*'*(2*(x&15)+1):^80s}");x>>=4
+
+
+Let's format the code and extract some variables:
+
+  x=4987738897068560
+  while x:
+    input = x & 15
+    width = 2*input + 1
+    layer = '*' * width
+    print(f"{layer:^80s}")
+    x = x>>4
+
+
+What we've got at this point is a loop over some form of input (more about that
+later). Within this loop, a computation produces the width of the tree at the
+current tree layer. Eventually the code prints a layer of the file. In pseudocode:
+
+  while there input left:
+    get the input value
+    compute the width of the layer using the input value
+    format the layer
+    print the layer
+    go to the next input value
+
+
+The layer formatting creates the layer based on the computed width:
+
+  '*' * width
+
+means "create a string containing 'width' asterisks". So if width=10, then the
+resulting string for the layer would become
+
+  "**********"
+
+This tree layer is wrapped in a formatting construct:
+
+  {layer:^80s}
+
+This specification means:
+  - s  = format the variable 'layer' as a string
+  - 80 = make that string 80 characters wide
+  - ^  = place the contents of variable 'layer' in the center of the string
+
+So this is how the layers of the tree are printed centered on the screen.
+(assuming an 80 character wide screen)
+Note: Python's print() function automatically prints a newline, so there's
+no need to print one ourselves here.
+
+
+Now let's focus on the input and the computation of the layer width.
+
+At the start, there is x = 4987738897068560. This magic number holds the
+information for drawing the tree. It is a string of "nibbles". A nibble is
+a number that is made up of four bits. A nibble can represent a number from
+0000 to 1111 in binary, which is 0 to 15 in decimal.
+
+As a simple example to show how this works, lets say we have the number 2021.
+When converting to binary, you will get: 011111100101
+Since a nibble has four bits, this can be split up as: 0111 1110 0101
+When converting these nibbles to decimal, you will get: 7, 14, 5
+
+In exactly the same way, the magic number 4987738897068560 represents a list
+of numbers that form the input for computing the tree layer widths.
+
+In the code, two operations are done over and over again, until no more data
+are available: INARY AND (&) and BIT SHIFTING (>>). Each iteration,
+a BINARY AND using value 15 (binary 1111) is performed to extract the last
+four bits of the input. After that x is BIT SHIFTED 4 bits to the right.
+Using the example number from above, this would result in the following steps:
+
+  START    : 011111100101  x = 2021
+  AND 1111 :         0101  x = 2021 input = 5
+  SHIFT 4  : --->01111110  x = 126
+  AND 1111 :         1110  x = 126  input = 14
+  SHIFT 4  : ------->0111  x = 7
+  AND 1111 :         0111  x = 7    input = 7
+  SHIFT 4  : ----------->  x = 0
+  END
+
+As you might have noticed, the order in which the nibble values are returned by
+this procedure (5, 14, 7) is the reverse of the nibble values as mentioned above
+(7, 14, 5). Logical, since the nibbles are nibbled off from right to left.
+
+So now we know how the input values are extracted from the magic number. These 
+input values are used to compute the layer widhts of the tree, using the function:
+
+  width = 2*input + 1
+
+
+Computation table
+-----------------
+
+ input | computation  | width | tree layer
+x & 15 | 2*input + 1  |       |
+-------+--------------+-------+------------------------
+     0 |     2*0 + 1  |     1 |            *
+     1 |     2*1 + 1  |     3 |           ***
+     2 |     2*2 + 1  |     5 |          *****
+     3 |     2*3 + 1  |     7 |         *******
+     1 |     2*1 + 1  |     3 |           ***
+     3 |     2*3 + 1  |     7 |         *******
+     5 |     2*5 + 1  |    11 |       ***********
+     7 |     2*7 + 1  |    15 |     ***************
+     2 |     2*2 + 1  |     5 |          *****
+     5 |     2*5 + 1  |    11 |       ***********
+     8 |     2*8 + 1  |    17 |    *****************
+    11 |    2*11 + 1  |    23 | ***********************
+     1 |     2*1 + 1  |     3 |           ***
+     1 |     2*1 + 1  |     3 |           ***
+
+
+Merry Christmas!
+

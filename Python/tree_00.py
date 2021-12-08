@@ -1,0 +1,1 @@
+for i in"135737BF5BHN33":print(f"{'*'*int(i,24):^80s}")

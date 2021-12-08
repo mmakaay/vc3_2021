@@ -1,0 +1,123 @@
+Running the code
+----------------
+
+The code can be run by feeding it to a python3 interpreter.
+For example on the Linux command line:
+
+  $ python3 tree_00.py
+
+
+How the code works
+------------------
+
+To explain how the code works, it's probably best to transform it into
+a more readable state ;-) Let's see... to start, we got this thing:
+
+  for i in"135737BF5BHN33":print(f"{'*'*int(i,24):^80s}")
+
+
+Let's format the code and extract some variables:
+
+  for input in "135737BF5BHN33":
+    width = int(input, 24)
+    layer = '*' * width
+    print(f"{layer:^80s}")
+
+
+What we've got at this point is a loop over some form of input (more about that
+later). Within this loop, a computation produces the width of the tree at the
+current tree layer. Eventually the code prints a layer of the file. In pseudocode:
+
+  foreach input value
+    compute the width of the layer using the input value
+    format the layer
+    print the layer
+
+
+The layer formatting creates the layer based on the computed width:
+
+  '*' * width
+
+means "create a string containing 'width' asterisks". So if width=10, then the
+resulting string for the layer would become
+
+  "**********"
+
+This tree layer is wrapped in a formatting construct:
+
+  {layer:^80s}
+
+This specification means:
+  - s  = format the variable 'layer' as a string
+  - 80 = make that string 80 characters wide
+  - ^  = place the contents of variable 'layer' in the center of the string
+
+So this is how the layers of the tree are printed centered on the screen.
+(assuming an 80 character wide screen)
+Note: Python's print() function automatically prints a newline, so there's
+no need to print one ourselves here.
+
+
+Now let's focus on the input and the computation of the layer width.
+
+At the start, there is the magic string "135737BF5BHN33". This string contains
+a sequence of characters that hold the information for drawing the tree.
+
+In python, one can loop over a string, which results in getting the characters
+of the string one by one. So the loop in the program will set input to "1",
+then "3", then "5", etc.
+
+Each input character in the loop represents the width of the tree at a given
+level. Because the maximum layer width of the tree is 23, we cannot make use
+of only decimal (0 .. 9) or hexadecimal (0 .. F) characters. Instead we need
+more letters:
+
+  0 = 0
+  1 = 1
+  2 = 2
+  ...
+  8 = 8     this is where decimal stops, i.e. "base 10"
+  9 = 9     |
+  ----------+
+  A = 10
+  ...
+  E = 14    this is where hexadecimal stops, i.e. "base 16"
+  F = 15    |
+  ----------+
+  G = 16
+  ..
+  M = 22    this is what we need, i.e. "base 24"
+  N = 23    |
+  ----------+
+
+Python's int() function can be used to convert a number representation from
+any base into a decimal integer. This is used to translate the base 24 input
+to the integer value that represents the layer width:
+
+  width = int(input, 24)
+
+
+Computation table
+-----------------
+
+    input |   width | tree layer
+  base 24 | base 10 |
+----------+---------+--------------------------
+        1 |       1 |            *
+        3 |       3 |           ***
+        5 |       5 |          *****
+        7 |       7 |         *******
+        3 |       3 |           ***
+        7 |       7 |         *******
+        B |      11 |       ***********
+        F |      15 |     ***************
+        5 |       5 |          *****
+        B |      11 |       ***********
+        H |      17 |    *****************
+        N |      23 | ***********************
+        3 |       3 |           ***
+        3 |       3 |           ***
+
+
+Merry Christmas!
+

@@ -1,0 +1,29 @@
+Challenge URL: http://logiker.com/Vintage-Computing-Christmas-Challenge-2021
+Author: Maurice Makaay
+System: Linux
+Language: Python 3
+Length of source code: 55 bytes
+Length of executable: 55 bytes
+
+This archive contains multiple Python-based solutions for the challenge.
+My personal target was to draw the Christmas tree using the least amound
+of source code as possible, also known as "code golf".
+
+I wrote multiple solutions, using various strategies. I bundled the ones
+that I found most interesting in this archive.
+
+Normally, the smallest code golf solutions also are the least readable ones
+and cause the most cognitive burden when trying to understand their inner
+workings. What I really enjoyed when I got to my final 55 byte version,
+is that this one is actually the easiest to read and understand.
+
+Available solutions:
+
+ code file  | size | explanation        | strategy
+------------+------+--------------------+--------------------------------------
+ tree_00.py |   55 | tree_00.README.txt | Tree widths encoded in base 24 input
+ tree_01.py |   57 | tree_01.README.txt | Tree widths encoded in ASCII chars
+ tree_02.py |   66 | n/a                | Slight improvement of tree_04.py
+ tree_03.py |   66 | tree_03.README.txt | Tree widths encoded in nibbles
+ tree_04.py |   68 | tree_04.README.txt | Compute using DIV/MOD logic
+------------+------+--------------------+--------------------------------------

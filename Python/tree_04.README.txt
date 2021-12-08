@@ -1,0 +1,125 @@
+Running the code
+----------------
+
+The code can be run by feeding it to a python3 interpreter.
+For example on the Linux command line:
+
+  $ python3 tree_04.py
+
+
+How the code works
+------------------
+
+To explain how the code works, it's probably best to transform it into
+a more readable state ;-) Let's see... to start, we got this thing:
+
+  for p in(*range(12),1,4):print(f"{'*'*((1+p%4)*(1+p//4)*2-1):^80s}")
+
+
+Let's format the code and extract some variables:
+
+  for p in(*range(12), 1, 4):
+    width = (1 + p%4) * (1 + p//4) * 2 - 1
+    layer = '*' * width
+    print(f"{layer:^80s}")                                                                                                                            
+
+What we've got at this point is a loop over a bunch of numbers.
+There's one number for every layer of the tree. Within this loop, a
+computation produces the width of the tree at the current tree layer.
+Then the layer is formatted, and eventually the code prints the layer
+of the tree. In pseudocode:
+
+  for each layer of the tree:
+    compute the width of the layer
+    format the layer
+    print the layer
+
+
+The layer formatting creates the layer based on the computed width:
+
+  '*' * width
+
+means "create a string containing 'width' asterisks". So if width=10, then the
+resulting string for the layer would become
+
+  "**********"
+
+This tree layer is wrapped in a formatting construct:
+
+  {layer:^80s}
+
+This specification means:
+  - s  = format the variable 'layer' as a string
+  - 80 = make that string 80 characters wide
+  - ^  = place the contents of variable 'layer' in the center of the string
+
+So this is how the layers of the tree are printed centered on the screen.
+(assuming an 80 character wide screen)
+Note: Python's print() function automatically prints a newline, so there's
+no need to print one ourselves here.
+
+
+Let's extract some more variables and give all variables useful names:
+
+for layer_number in(*range(12), 1, 4):
+  segment = layer_number // 4
+  branch = layer_number % 4
+  width = (1 + branch) * (1 + segment)*2 - 1
+  layer = '*' * width
+  print(f"{layer:^80s}")
+
+The layer_number counts up from 0 .. 11. There's 1 and 4 at the end of this
+too, but forget those for now. I'll get back to those later.
+
+The tree has three segments. Each segment is one of the triangl-y shapes that
+make up the tree. The segment index is computed using layer_number // 4.
+This returns the divider part of the layer_number divided by four.
+
+Each segment has four branches. The branch index within a segment is computed
+using layer_number % 4. This returns the modulo (remainder part) of the
+layer_number divided by four.
+
+The segment and branch indexes are used to eventually compute the width of the
+tree at a given layer, using the formula
+
+  (1 + branch) * (1 + segment)*2 - 1.
+
+
+Computation table
+-----------------
+
+This table shows an overview of these computations for the loop input 0 .. 11:
+
+ layer | segment | branch | computation      | width | tree layer
+-------+---------+--------+------------------+-------+------------------------
+     0 |       0 |      0 | (1+0)*(1+0)*2-1  |     1 |            *
+     1 |       0 |      1 | (1+1)*(1+0)*2-1  |     3 |           ***
+     2 |       0 |      2 | (1+2)*(1+0)*2-1  |     5 |          *****
+     3 |       0 |      3 | (1+3)*(1+0)*2-1  |     7 |         *******
+     4 |       1 |      0 | (1+0)*(1+1)*2-1  |     3 |           ***
+     5 |       1 |      1 | (1+1)*(1+1)*2-1  |     7 |         *******
+     6 |       1 |      2 | (1+2)*(1+1)*2-1  |    11 |       ***********
+     7 |       1 |      3 | (1+3)*(1+1)*2-1  |    15 |     ***************
+     8 |       2 |      0 | (1+0)*(1+2)*2-1  |     5 |          *****
+     9 |       2 |      1 | (1+1)*(1+2)*2-1  |    11 |       ***********
+    10 |       2 |      2 | (1+2)*(1+2)*2-1  |    17 |    *****************
+    11 |       2 |      3 | (1+3)*(1+2)*2-1  |    23 | ***********************
+
+
+So this is how the segments of the tree are drawn. To finish the tree, we need
+the stem too of course. That that is what the last 1 and 4 in the loop take
+care of. If you look at the schema from above, then you can see that layer 1 and
+layer 4 both provide a width of 3. That is exactly what is needed for the stem.
+As a little bit of obfuscation, I used "1, 4" in the for loop, but that could
+have been "1, 1" or "4, 4" as well.
+
+For completionism, here are the computations for the last 1 and 4 in the loop:
+
+ layer | segment | branch | computation      | width | tree layer
+-------+---------+--------+------------------+-------+------------------------
+     1 |       0 |      1 | (1+1)*(1+0)*2-1  |     3 |           ***
+     4 |       1 |      0 | (1+0)*(1+1)*2-1  |     3 |           ***
+
+
+Merry Christmas!
+

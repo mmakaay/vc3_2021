@@ -1,0 +1,167 @@
+Challenge URL: http://logiker.com/Vintage-Computing-Christmas-Challenge-2021
+Author: Maurice Makaay
+System: Linux
+Language: Perl 5
+Length of source code: 57 bytes
+Length of executable: 57 bytes
+
+
+Running the code
+----------------
+
+The code can be run by feeding the script file to a Perl 5 interpreter.
+For example on the Linux command line:
+
+  $ perl tree.pl
+
+Another way is to feed the code directly:
+
+  $ perl -e 'printf"%39s*%1\$s\n","*"x$_ for 0..3,1,3,5,7,2,5,8,11,1,1'
+
+
+How the code works
+------------------
+
+To explain how the code works, it's probably best to transform it into
+a more readable state ;-) Let's see... to start, we got this thing:
+
+
+  printf"%39s*%1\$s\n","*"x$_ for 0..3,1,3,5,7,2,5,8,11,1,1
+
+
+Let's format the code a bit differently and add a variable for readability:
+
+  for $width (0..3,1,3,5,7,2,5,8,11,1,1) {
+    printf("%39s*%1\$s\n", "*"x$width)
+  }
+
+The 0..3 in the code is shorthand for the list 0,1,2,3.
+Maybe it's easier to understand if this shorthand is unwrapped:
+
+  for $width (0,1,2,3,1,3,5,7,2,5,8,11,1,1) {
+    printf("%39s*%1\$s\n", "*"x$width)
+  }
+
+The for loop itself is rather simple. It sets $width to 0, 1, 2, 3, 1, etc.
+Each of these numbers represents how wide the tree must be at one of its
+14 layers.
+
+In the printf line, you can find this code:
+
+  "*"x$width
+
+This means: "create a string containing '$width' asterisks".
+So let's say that $width=10, then the resulting string would be:
+
+  "**********"
+
+To clean up the code a bit more, let's extract the above in its own variable:
+
+  for $width (0,1,2,3,1,3,5,7,2,5,8,11,1,1) {
+    $layer = "*" x $width
+    printf("%39s*%1\$s\n", $layer)
+  }
+
+Now, if you look at the widths that are used to create the $layer string, you
+will notice that the widths aren't the actual widths of the tree. Instead,
+the tree is constructed as follows:
+
+       1      | 2 |       3
+  ------------+---+--------------
+              | * | 
+            * | * | *
+           ** | * | **
+          *** | * | ***
+            * | * | *
+          *** | * | ***
+        ***** | * | *****
+      ******* | * | *******
+           ** | * | **
+        ***** | * | *****
+     ******** | * | ********
+  *********** | * | ***********
+            * | * | *
+            * | * | *
+
+So basically, there's a line of asterisks in the center over the full height
+of the tree, and the $width defines how many asterisks must be printed to the
+left and the right of that center. And this is what the printf function call
+takes care of:
+
+  printf("%39s*%1\$s\n", $layer)
+
+This call contains the formatting string "%39s*%1\$s\n". It might looks like
+quite a mess for the uninitiated, but let's describe its individual bits:
+
+  - %39s  : Prints the value of $layer as a string (%..s), using 39
+            characters (.39.), padding the string with spaces, aligning the
+            layer to the right.
+  - *     : This is a literal asterisk character, so no special meaning.
+  - %1\$s : In this part, the $ character is escaped as \$, which adds to the
+            obfuscation. But when unescaping that, this part reads %1$s.  
+            This formatting specification prints the first argument (.1$.)
+            after the formatting specification (i.e. $layer) as a
+            string (%..s).
+  - \n    : This is a literal newline.
+
+Note: %39s could also have been written as %1\$39s, to specifically point to
+the $layer variable as the string to print. However, since this is a code
+golf solution (using as least bytes of code as possible), I kept it at %39s,
+which will use $layer by default.
+
+By now you likely understand how the tree it printed, but for completeness
+sake, here's a step by step presentation:
+
+  Using: printf("%39s\n", $layer)
+  
+               
+              *
+             **
+            ***
+              *
+            ***
+          *****
+        *******
+             **
+          *****
+       ********
+    ***********
+              *
+              *
+  
+  Using: printf("%39s*\n", $layer)
+
+               *
+              **
+             ***
+            ****
+              **
+            ****
+          ******
+        ********
+             ***
+          ******
+       *********
+    ************
+              **
+              **
+  
+  Using: printf("%39s*%1\$s\n", $layer)
+  
+               *
+              ***
+             *****
+            *******
+              ***
+            *******
+          ***********
+        ***************
+             *****
+          ***********
+       *****************
+    ***********************
+              ***
+              ***
+  
+       Merry Christmas!
+
